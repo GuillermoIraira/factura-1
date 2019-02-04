@@ -9,6 +9,7 @@ import com.bolsadeideas.springboot.app.models.entity.Cliente;
 import com.bolsadeideas.springboot.app.models.entity.Factura;
 import com.bolsadeideas.springboot.app.models.entity.Producto;
 
+
 public interface IClienteService {
 
 	public List<Cliente> findAll();
@@ -26,5 +27,11 @@ public interface IClienteService {
 	public void saveFactura(Factura factura);
 	
 	public Producto findProductoById(Long id);
+	
+	public Factura findFacturaById(Long id);
+	
+	public void deleteFactura(Long id);
+	
+	
 
 }

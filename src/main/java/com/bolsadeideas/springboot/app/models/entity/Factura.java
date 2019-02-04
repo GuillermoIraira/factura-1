@@ -1,6 +1,7 @@
 package com.bolsadeideas.springboot.app.models.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -19,6 +20,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 @Entity
 @Table(name = "facturas")
 public class Factura implements Serializable {
@@ -27,7 +30,9 @@ public class Factura implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@NotEmpty
 	private String descripcion;
+
 	private String observacion;
 
 	@Temporal(TemporalType.DATE)
@@ -36,37 +41,20 @@ public class Factura implements Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Cliente cliente;
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "factura_id")
 	private List<ItemFactura> items;
+
+	public Factura() {
+		this.items = new ArrayList<ItemFactura>();
+	}
 
 	@PrePersist
 	public void prePersist() {
 		createAt = new Date();
 	}
-	public Double getTotal() {
-		Double total= 0.0;
-		int size = items.size();
-		for (int i=0; i< size ; i++) {
-			total += items.get(i).calcularImporte();
-			
-		}
-		
-		return total;
-		
-		
-		
-	}
-	public Factura(Long id, String descripcion, String observacion, Date createAt, Cliente cliente,
-			List<ItemFactura> items) {
-		super();
-		this.id = id;
-		this.descripcion = descripcion;
-		this.observacion = observacion;
-		this.createAt = createAt;
-		this.cliente = cliente;
-		this.items = items;
-	}
+
 	public Long getId() {
 		return id;
 	}
@@ -81,14 +69,6 @@ public class Factura implements Serializable {
 
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
-	}
-
-	public List<ItemFactura> getItems() {
-		return items;
-	}
-
-	public void setItems(List<ItemFactura> items) {
-		this.items = items;
 	}
 
 	public String getObservacion() {
@@ -114,13 +94,29 @@ public class Factura implements Serializable {
 	public void setCliente(Cliente cliente) {
 		this.cliente = cliente;
 	}
-	
+
+	public List<ItemFactura> getItems() {
+		return items;
+	}
+
+	public void setItems(List<ItemFactura> items) {
+		this.items = items;
+	}
+
 	public void addItemFactura(ItemFactura item) {
 		this.items.add(item);
-		
 	}
-	public Factura() {
-		
+
+	public Double getTotal() {
+		Double total = 0.0;
+
+		int size = items.size();
+
+		for (int i = 0; i < size; i++) {
+			total += items.get(i).calcularImporte();
+		}
+		return total;
 	}
+
 	private static final long serialVersionUID = 1L;
 }
